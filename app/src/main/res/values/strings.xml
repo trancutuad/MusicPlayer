@@ -1,23 +1,51 @@
 <resources>
-    <string name="app_name">Nav Music</string>
+    <string name="app_name">Music</string>
 
-    <string name="title">Nav Music</string>
-    <string name="theme_color">Theme Color</string>
-    <string name="sleep_timer">Sleep Timer</string>
-    <string name="rate_app">Rate This App</string>
-    <string name="about">About</string>
-    <string name="search">Search</string>
-    <string name="favorites">Favorites</string>
-    <string name="about_text">Nav Music is an application to play mp3 music on your android device. With simple interface make you enjoy the music
-        easily. Custom your color as you feel.
+    <string name="title">Music</string>
+    <string name="theme_color">Giao diện</string>
+    <string name="sleep_timer">Hẹn giờ</string>
+    <string name="rate_app">Quản lí người dùng</string>
+    <string name="about">Thông tin</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="favorites">Yêu thích</string>
+    <string name="about_text">Music là một ứng dụng để chơi nhạc offline mp3 trên thiết bị Android của bạn.Với giao diện đơn giản giúp bạn thưởng thức âm nhạc
+        một cách dễ dàng. Tùy chỉnh màu sắc của bạn theo cảm nhận của bạn.
     </string>
     <string name="ok">OK</string>
     <string name="start_time">0.00</string>
     <string name="final_time">0.00</string>
     <string name="search_hint">Song Name</string>
-    <string name="no">No</string>
-    <string name="yes">Yes</string>
-    <string name="delete">Delete</string>
+    <string name="no">Không</string>
+    <string name="yes">Có</string>
+    <string name="delete">Xóa bỏ</string>
     <string name="delete_text"> Are you sure you want to delete</string>
-    <string name="play_next">Play Next</string>
+    <string name="play_next">Lượt tiếp theo</string>
+    <string name="logout">Đăng xuất</string>
+
+    //
+
+    <string name="prompt_email">Username</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Login</string>
+    <string name="action_sign_in_short">Login</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="Login_Checkbox">Remember me ?</string>
+    <string name="notify_empty_user_name">Username không được để trống</string>
+    <string name="notify_empty_pass">Passwword không được để trống</string>
+    <string name="notify_min_pass">Password phải trên 6 kí tự</string>
+    <string name="notify_wrongusernamepass">Tài khoản mật khẩu không chính xác</string>
+    <string name="manguoidung">Mã Người dùng</string>
+    <string name="notify_emty_email">Không được để trống</string>
+    <string name="notify_emty_passWord">Không được để trống</string>
+    <string name="notify_min_passWord">Pass trên 6 lý tự</string>
+    <string name="notify_length_pass">Mật khẩu trên 6 kí tự</string>
+    <string name="notify_empty_user">Không được để trống</string>
+    <string name="notify_wrong_username_password">Không tồn người dùng</string>
+    <string name="action_dangki">dangki</string>
 </resources>

@@ -1,19 +1,15 @@
 package com.example.soc_macmini_15.musicplayer.Activity;
 
-import android.Manifest;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.pm.PackageManager;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -35,14 +31,16 @@ import android.widget.Toast;
 import com.example.soc_macmini_15.musicplayer.Adapter.ViewPagerAdapter;
 import com.example.soc_macmini_15.musicplayer.DB.FavoritesOperations;
 import com.example.soc_macmini_15.musicplayer.Fragments.AllSongFragment;
-import com.example.soc_macmini_15.musicplayer.Fragments.CurrentSongFragment;
 import com.example.soc_macmini_15.musicplayer.Fragments.FavSongFragment;
 import com.example.soc_macmini_15.musicplayer.Model.SongsList;
 import com.example.soc_macmini_15.musicplayer.R;
+import com.example.soc_macmini_15.musicplayer.ui.LoginActivity;
+import com.example.soc_macmini_15.musicplayer.ui.NguoidungActivity;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, AllSongFragment.createDataParse, FavSongFragment.createDataParsed, CurrentSongFragment.createDataParsed {
+
+public class MainActivity extends AppCompatActivity implements AllSongFragment.createDataParse, FavSongFragment.createDataParsed {
 
     private Menu menu;
 
@@ -52,28 +50,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private SeekBar seekbarController;
     private DrawerLayout mDrawerLayout;
     private TextView tvCurrentTime, tvTotalTime;
+    private FloatingActionButton refreshSongs;
 
 
     private ArrayList<SongsList> songList;
     private int currentPosition;
     private String searchText = "";
     private SongsList currSong;
+    private final int MY_PERMISSION_REQUEST = 100;
 
     private boolean checkFlag = false, repeatFlag = false, playContinueFlag = false, favFlag = true, playlistFlag = false;
-    private final int MY_PERMISSION_REQUEST = 100;
     private int allSongLength;
 
     MediaPlayer mediaPlayer;
     Handler handler;
     Runnable runnable;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
-        grantedPermission();
+        setPagerLayout();
 
     }
 
@@ -82,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
 
     private void init() {
+
+        //ánh xạ
         imgBtnPrev = findViewById(R.id.img_btn_previous);
         imgBtnNext = findViewById(R.id.img_btn_next);
         imgbtnReplay = findViewById(R.id.img_btn_replay);
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         tvCurrentTime = findViewById(R.id.tv_current_time);
         tvTotalTime = findViewById(R.id.tv_total_time);
-        FloatingActionButton refreshSongs = findViewById(R.id.btn_refresh);
+        refreshSongs = findViewById(R.id.btn_refresh);
         seekbarController = findViewById(R.id.seekbar_controller);
         viewPager = findViewById(R.id.songs_viewpager);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -107,127 +107,131 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.menu_icon);
 
-        imgBtnNext.setOnClickListener(this);
-        imgBtnPrev.setOnClickListener(this);
-        imgbtnReplay.setOnClickListener(this);
-        refreshSongs.setOnClickListener(this);
-        imgBtnPlayPause.setOnClickListener(this);
-        imgBtnSetting.setOnClickListener(this);
-
+        // navigation view
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 item.setChecked(true);
                 mDrawerLayout.closeDrawers();
                 switch (item.getItemId()) {
+                    case R.id.nav_user:
+                        btnUser();
+                        break;
                     case R.id.nav_about:
                         about();
+                        break;
+                    case R.id.navlogout:
+                        logout();
                         break;
                 }
                 return true;
             }
         });
-    }
 
-    /**
-     * Function to ask user to grant the permission.
-     */
-
-    private void grantedPermission() {
-        if (ContextCompat.checkSelfPermission(MainActivity.this,
-                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSION_REQUEST);
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSION_REQUEST);
-            } else {
-                if (ContextCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    Snackbar snackbar = Snackbar.make(mDrawerLayout, "Provide the Storage Permission", Snackbar.LENGTH_LONG);
-                    snackbar.show();
-                }
+        //refreshSongs
+        refreshSongs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setPagerLayout();
+                Toast.makeText(getApplicationContext(),"refresh",Toast.LENGTH_SHORT).show();
             }
-        } else {
-            setPagerLayout();
-        }
-    }
+        });
 
-    /**
-     * Checking if the permission is granted or not
-     *
-     * @param requestCode
-     * @param permissions
-     * @param grantResults
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSION_REQUEST:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ContextCompat.checkSelfPermission(MainActivity.this,
-                            Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                        Toast.makeText(this, "Permission Granted!", Toast.LENGTH_SHORT).show();
-                        setPagerLayout();
-                    } else {
-                        Snackbar snackbar = Snackbar.make(mDrawerLayout, "Provide the Storage Permission", Snackbar.LENGTH_LONG);
-                        snackbar.show();
-                        finish();
+        //next
+        imgBtnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkFlag) {
+                    if (currentPosition + 1 < songList.size()) {
+                        attachMusic(songList.get(currentPosition + 1).getTitle(), songList.get(currentPosition + 1).getPath());
+                        currentPosition += 1;
+                        Toast.makeText(getApplicationContext(), "Next..", Toast.LENGTH_SHORT).show();
                     }
                 }
-        }
-    }
 
-    /**
-     * Setting up the tab layout with the viewpager in it.
-     */
+            }
+        });
+        //prev
+        imgBtnPrev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkFlag) {
+                    if (mediaPlayer.getCurrentPosition() > 10) {
+                        if (currentPosition - 1 > -1) {
+                            attachMusic(songList.get(currentPosition - 1).getTitle(), songList.get(currentPosition - 1).getPath());
+                            currentPosition = currentPosition - 1;
+                            Toast.makeText(getApplicationContext(), "Prev..", Toast.LENGTH_SHORT).show();
+                        } else {
+                            attachMusic(songList.get(currentPosition).getTitle(), songList.get(currentPosition).getPath());
+                        }
+                    } else {
+                        attachMusic(songList.get(currentPosition).getTitle(), songList.get(currentPosition).getPath());
+                    }
+                }
+            }
+        });
+
+        //play
+        imgBtnPlayPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkFlag) {
+                    if (mediaPlayer.isPlaying()) {
+                        mediaPlayer.pause();
+                        imgBtnPlayPause.setImageResource(R.drawable.play_icon);
+                        Toast.makeText(getApplicationContext(), "Pause..", Toast.LENGTH_SHORT).show();
+                    } else if (!mediaPlayer.isPlaying()) {
+                        mediaPlayer.start();
+                        imgBtnPlayPause.setImageResource(R.drawable.pause_icon);
+                        Toast.makeText(getApplicationContext(), "Play..", Toast.LENGTH_SHORT).show();
+                        playCycle();
+                    }
+                }
+            }
+        });
+
+        // prev
+        imgbtnReplay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (repeatFlag) {
+                    Toast.makeText(getApplicationContext(), "phát lại bật.", Toast.LENGTH_SHORT).show();
+                    mediaPlayer.setLooping(false);
+                    repeatFlag = false;
+                } else {
+                    Toast.makeText(getApplicationContext(), "phát lại tắt.", Toast.LENGTH_SHORT).show();
+                    mediaPlayer.setLooping(true);
+                    repeatFlag = true;
+                }
+            }
+        });
+        // setting
+        imgBtnSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!playContinueFlag) {
+                    playContinueFlag = true;
+                    Toast.makeText(getApplicationContext(), "Lặp lại on.", Toast.LENGTH_SHORT).show();
+                } else {
+                    playContinueFlag = false;
+                    Toast.makeText(getApplicationContext(), "Lặp lại off.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+    }
 
     private void setPagerLayout() {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(), getContentResolver());
         viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
 
         tabLayout = findViewById(R.id.tabs);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.setupWithViewPager(viewPager);
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
 
     }
 
-    /**
-     * Function to show the dialog for about us.
-     */
     private void about() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.about))
@@ -241,7 +245,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
+    private void logout(){
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
+        Toast.makeText(this, "Bạn đã đăng xuất", Toast.LENGTH_SHORT).show();
+    }
+    private void btnUser(){
+        Intent intent = new Intent(MainActivity.this, NguoidungActivity.class);
+        startActivity(intent);
+        Toast.makeText(this, "Danh sách người dùng", Toast.LENGTH_SHORT).show();
+    }
 
+    // search
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
@@ -292,6 +307,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         } else {
                             item.setIcon(R.drawable.favorite_icon);
                             favFlag = true;
+
                         }
                     }
                 return true;
@@ -302,90 +318,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    /**
-     * Function to handle the click events.
-     *
-     * @param v
-     */
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.img_btn_play:
-                if (checkFlag) {
-                    if (mediaPlayer.isPlaying()) {
-                        mediaPlayer.pause();
-                        imgBtnPlayPause.setImageResource(R.drawable.play_icon);
-                    } else if (!mediaPlayer.isPlaying()) {
-                        mediaPlayer.start();
-                        imgBtnPlayPause.setImageResource(R.drawable.pause_icon);
-                        playCycle();
-                    }
-                } else {
-                    Toast.makeText(this, "Select the Song ..", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case R.id.btn_refresh:
-                Toast.makeText(this, "Refreshing", Toast.LENGTH_SHORT).show();
-                setPagerLayout();
-                break;
-            case R.id.img_btn_replay:
 
-                if (repeatFlag) {
-                    Toast.makeText(this, "Replaying Removed..", Toast.LENGTH_SHORT).show();
-                    mediaPlayer.setLooping(false);
-                    repeatFlag = false;
-                } else {
-                    Toast.makeText(this, "Replaying Added..", Toast.LENGTH_SHORT).show();
-                    mediaPlayer.setLooping(true);
-                    repeatFlag = true;
-                }
-                break;
-            case R.id.img_btn_previous:
-                if (checkFlag) {
-                    if (mediaPlayer.getCurrentPosition() > 10) {
-                        if (currentPosition - 1 > -1) {
-                            attachMusic(songList.get(currentPosition - 1).getTitle(), songList.get(currentPosition - 1).getPath());
-                            currentPosition = currentPosition - 1;
-                        } else {
-                            attachMusic(songList.get(currentPosition).getTitle(), songList.get(currentPosition).getPath());
-                        }
-                    } else {
-                        attachMusic(songList.get(currentPosition).getTitle(), songList.get(currentPosition).getPath());
-                    }
-                } else {
-                    Toast.makeText(this, "Select a Song . .", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case R.id.img_btn_next:
-                if (checkFlag) {
-                    if (currentPosition + 1 < songList.size()) {
-                        attachMusic(songList.get(currentPosition + 1).getTitle(), songList.get(currentPosition + 1).getPath());
-                        currentPosition += 1;
-                    } else {
-                        Toast.makeText(this, "Playlist Ended", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(this, "Select the Song ..", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case R.id.img_btn_setting:
-                if (!playContinueFlag) {
-                    playContinueFlag = true;
-                    Toast.makeText(this, "Loop Added", Toast.LENGTH_SHORT).show();
-                } else {
-                    playContinueFlag = false;
-                    Toast.makeText(this, "Loop Removed", Toast.LENGTH_SHORT).show();
-                }
-                break;
-        }
-    }
 
-    /**
-     * Function to attach the song to the music player
-     *
-     * @param name
-     * @param path
-     */
 
     private void attachMusic(String name, String path) {
         imgBtnPlayPause.setImageResource(R.drawable.play_icon);
@@ -417,14 +351,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    /**
-     * Function to set the controls according to the song
-     */
-
     private void setControls() {
         seekbarController.setMax(mediaPlayer.getDuration());
         mediaPlayer.start();
-        playCycle();
+//        playCycle();
         checkFlag = true;
         if (mediaPlayer.isPlaying()) {
             imgBtnPlayPause.setImageResource(R.drawable.pause_icon);
@@ -474,38 +404,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private String getTimeFormatted(long milliSeconds) {
+    // finalTimerString
+
+    private String getTimeFormatted(long milliseconds) {
         String finalTimerString = "";
-        String secondsString;
+        String secondsString = "";
 
-        //Converting total duration into time
-        int hours = (int) (milliSeconds / 3600000);
-        int minutes = (int) (milliSeconds % 3600000) / 60000;
-        int seconds = (int) ((milliSeconds % 3600000) % 60000 / 1000);
-
-        // Adding hours if any
-        if (hours > 0)
+        // Convert total duration into time
+        int hours = (int)( milliseconds / (1000*60*60));
+        int minutes = (int)(milliseconds % (1000*60*60)) / (1000*60);
+        int seconds = (int) ((milliseconds % (1000*60*60)) % (1000*60) / 1000);
+        // Add hours if there
+        if(hours > 0){
             finalTimerString = hours + ":";
+        }
 
         // Prepending 0 to seconds if it is one digit
-        if (seconds < 10)
+        if(seconds < 10){
             secondsString = "0" + seconds;
-        else
-            secondsString = "" + seconds;
+        }else{
+            secondsString = "" + seconds;}
 
         finalTimerString = finalTimerString + minutes + ":" + secondsString;
 
-        // Return timer String;
+        // return timer string
         return finalTimerString;
     }
 
-
-    /**
-     * Function Overrided to receive the data from the fragment
-     *
-     * @param name
-     * @param path
-     */
 
     @Override
     public void onDataPass(String name, String path) {
@@ -529,17 +454,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public String queryText() {
         return searchText.toLowerCase();
-    }
-
-    @Override
-    public SongsList getSong() {
-        currentPosition = -1;
-        return currSong;
-    }
-
-    @Override
-    public boolean getPlaylistFlag() {
-        return playlistFlag;
     }
 
     @Override
