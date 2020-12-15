@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:padding="8dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="vn.poly.musicplayer.ui.ThemNguoiDungActivity">
 
     <ImageView
         android:src="@drawable/welcome"
@@ -40,8 +41,6 @@
                     android:maxLines="1"
                     android:singleLine="true" />
 
-
-
                 <EditText
                     android:id="@+id/edtPassword"
                     android:layout_width="match_parent"
@@ -72,16 +71,6 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/btncanceluser"
-                    style="?android:textAppearanceSmall"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_weight="1"
-                    android:text="Hủy"
-                    android:textStyle="bold" />
-
-                <Button
                     android:id="@+id/btnadduser"
                     style="?android:textAppearanceSmall"
                     android:layout_width="0dp"
@@ -92,12 +81,6 @@
                     android:textStyle="bold" />
 
             </LinearLayout>
-            <Button
-                android:id="@+id/btnlistnguoidung"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:text="Danh sách người dùng"/>
-
 
         </LinearLayout>
 </LinearLayout>

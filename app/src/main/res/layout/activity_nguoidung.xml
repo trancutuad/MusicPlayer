@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    tools:context=".ui.NguoidungActivity">
+    tools:context="vn.poly.musicplayer.ui.NguoidungActivity">
 
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/customlvnguoidung"
-        ></ListView>
+        >
+    </ListView>
 
+<android.support.design.widget.FloatingActionButton
+    android:id="@+id/fab"
+    android:layout_marginBottom="52dp"
+    android:layout_marginRight="16dp"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentRight="true"
+    android:clickable="true"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/user"
+    android:layout_margin="16dp" />
 
-</LinearLayout>
+</RelativeLayout>

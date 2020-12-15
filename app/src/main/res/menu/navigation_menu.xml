@@ -5,15 +5,15 @@
 
         <item
             android:id="@+id/nav_user"
-            android:icon="@drawable/rate_icon"
+            android:icon="@drawable/use"
             android:title="@string/rate_app" />
         <item
             android:id="@+id/nav_about"
-            android:icon="@drawable/about_icon"
+            android:icon="@drawable/about"
             android:title="@string/about" />
         <item
             android:id="@+id/navlogout"
-            android:icon="@drawable/logout"
+            android:icon="@drawable/out"
             android:title="@string/logout" />
     </group>
 </menu>

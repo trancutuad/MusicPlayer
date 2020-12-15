@@ -5,18 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.ManHinhChaoActivity"
+    tools:context="vn.poly.musicplayer.ui.ManHinhChaoActivity"
     android:gravity="center">
+
+    <TextView
+        android:textColor="#E14513"
+        android:textStyle="italic"
+        android:textSize="30sp"
+        android:gravity="center"
+        android:text="MUSIC PLAYER"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></TextView>
 
     <ImageView
         android:id="@+id/imgchao"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="300dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
-        android:src="@drawable/manhinhchao" />
-
-
+        android:src="@drawable/welcome1" />
 
 
 </LinearLayout>
